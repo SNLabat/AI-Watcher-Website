@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Claude Watch</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #08080d;
+      --bg2: #111110;
+      --bg3: #1a1918;
+      --border: rgba(177,173,161,0.12);
+      --text: #ffffff;
+      --muted: #b1ada1;
+      --faint: rgba(177,173,161,0.28);
+      --orange: #c15f3c;
+      --light-grey: #f4f3ee;
+      --dark-grey: #b1ada1;
+      --accent: #c15f3c;
+      --radius: 20px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 48px;
+      background: rgba(8,8,13,0.75);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 17px; font-weight: 600; letter-spacing: -0.3px;
+      text-decoration: none; color: var(--text);
+    }
+    .nav-logo .dot {
+      width: 28px; height: 28px; border-radius: 8px;
+      overflow: hidden; flex-shrink: 0;
+    }
+    .nav-logo .dot img { width: 100%; height: 100%; display: block; }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); }
+
+    /* ── CONTENT ──────────────────────────────────────────────────── */
+    main {
+      flex: 1;
+      padding: 140px 24px 80px;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .page-eyebrow {
+      font-size: 12px; font-weight: 600; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+    }
+
+    .page-title {
+      font-size: clamp(36px, 6vw, 56px);
+      font-weight: 700; letter-spacing: -1.5px; line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .page-date {
+      font-size: 13px; color: var(--muted); margin-bottom: 64px;
+    }
+
+    /* Section headings */
+    .privacy-section { margin-bottom: 52px; }
+
+    .privacy-section h2 {
+      font-size: 20px; font-weight: 650; letter-spacing: -0.4px;
+      margin-bottom: 14px; color: var(--text);
+    }
+
+    .privacy-section p {
+      font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 14px;
+    }
+
+    .privacy-section p:last-child { margin-bottom: 0; }
+
+    .privacy-section ul {
+      list-style: none; padding: 0; margin-bottom: 14px;
+    }
+
+    .privacy-section ul li {
+      font-size: 15px; color: var(--muted); line-height: 1.8;
+      padding-left: 20px; position: relative; margin-bottom: 6px;
+    }
+
+    .privacy-section ul li::before {
+      content: '–';
+      position: absolute; left: 0;
+      color: var(--accent);
+    }
+
+    /* highlight box */
+    .highlight-box {
+      background: rgba(193,95,60,0.08);
+      border: 1px solid rgba(193,95,60,0.20);
+      border-radius: 14px;
+      padding: 24px 28px;
+      margin-bottom: 52px;
+    }
+    .highlight-box p {
+      font-size: 15px; color: var(--light-grey); line-height: 1.75; margin: 0;
+    }
+
+    .divider {
+      width: 100%; height: 1px; background: var(--border); margin: 52px 0;
+    }
+
+    /* contact link */
+    .inline-link {
+      color: var(--accent); text-decoration: none;
+      border-bottom: 1px solid rgba(193,95,60,0.3);
+      transition: border-color 0.2s;
+    }
+    .inline-link:hover { border-color: var(--accent); }
+
+    /* ── FOOTER ──────────────────────────────────────────────────── */
+    footer {
+      padding: 48px 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    footer .footer-logo {
+      font-size: 18px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 12px;
+    }
+    footer p { font-size: 13px; color: #ffffff; }
+    footer .footer-note { margin-top: 8px; font-size: 12px; color: var(--muted); }
+    footer .footer-links { margin-top: 16px; display: flex; gap: 24px; justify-content: center; }
+    footer .footer-links a { font-size: 12px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    footer .footer-links a:hover { color: var(--text); }
+
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="dot"><img src="icon.png" alt="Claude Watch icon"/></div>
+    Claude Watch
+  </a>
+  <div class="nav-links">
+    <a href="index.html#features">Features</a>
+    <a href="index.html#platforms">Platforms</a>
+    <a href="index.html#how-it-works">How It Works</a>
+    <a href="support.html">Support</a>
+    <a href="privacy.html" class="active">Privacy</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+  <div class="container">
+
+    <p class="page-eyebrow">Privacy Policy</p>
+    <h1 class="page-title">Your data stays yours.</h1>
+    <p class="page-date">Last updated: March 2026</p>
+
+    <div class="highlight-box">
+      <p>
+        <strong style="color:#ffffff">The short version:</strong> Claude Watch collects nothing.
+        Your session credentials are stored entirely on your own devices within Apple's
+        secure App Group container. No data is ever sent to our servers — because there are no servers.
+      </p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>Information We Collect</h2>
+      <p>
+        Claude Watch does not collect, transmit, or store any personal information on external servers.
+        The only data the app handles are the session credentials (cookies) required to query the
+        Claude API on your behalf. These are:
+      </p>
+      <ul>
+        <li>Your Claude <strong style="color:var(--text)">sessionKey</strong> cookie — used to authenticate API requests</li>
+        <li>Your Claude <strong style="color:var(--text)">lastActiveOrg</strong> cookie — used to identify your organization</li>
+      </ul>
+      <p>
+        These credentials are captured automatically when you sign in through the in-app browser and
+        are written only to an Apple App Group shared container on your device.
+      </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="privacy-section">
+      <h2>How Your Data Is Used</h2>
+      <p>
+        Your credentials are used for one purpose only: making authenticated requests to the
+        Claude API to retrieve your current usage statistics. These requests are made directly
+        from your device to Anthropic's servers — Claude Watch is never in the middle.
+      </p>
+      <p>
+        Usage data (your percentage consumed, time to reset) is displayed within the app,
+        on your Apple Watch, and in your home screen widgets. It is never logged, analyzed,
+        or stored beyond what is displayed on screen.
+      </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="privacy-section">
+      <h2>Data Storage &amp; Security</h2>
+      <p>
+        All credentials are stored in an Apple App Group container — a secure, sandboxed
+        storage mechanism shared only between Claude Watch's own app targets (iPhone app,
+        Apple Watch app, and widget extension). This storage is:
+      </p>
+      <ul>
+        <li>Isolated from all other apps on your device</li>
+        <li>Protected by iOS's built-in data protection</li>
+        <li>Never backed up to iCloud or any external service</li>
+        <li>Deleted when you uninstall Claude Watch</li>
+      </ul>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="privacy-section">
+      <h2>Cross-Device Sync</h2>
+      <p>
+        When syncing credentials from your iPhone to your Apple Watch, Claude Watch uses
+        Apple's WatchConnectivity framework. This communication travels over the encrypted,
+        device-to-device channel Apple provides — it does not pass through any external server
+        or network endpoint controlled by Claude Watch.
+      </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="privacy-section">
+      <h2>Third-Party Services</h2>
+      <p>
+        Claude Watch interacts with one external service: the Anthropic Claude API. When the
+        app fetches your usage data, your device sends a request directly to Anthropic's
+        infrastructure using your session credentials. This interaction is governed by
+        Anthropic's own privacy policy and terms of service, not ours.
+      </p>
+      <p>
+        Claude Watch has no affiliation with Anthropic and is not endorsed by Anthropic.
+      </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="privacy-section">
+      <h2>Analytics &amp; Tracking</h2>
+      <p>
+        Claude Watch contains no analytics SDKs, no crash reporting services, no advertising
+        frameworks, and no third-party tracking of any kind. There is no account system,
+        no sign-up, and no way for us to identify individual users.
+      </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="privacy-section">
+      <h2>Children's Privacy</h2>
+      <p>
+        Claude Watch is not directed at children under the age of 13 and does not knowingly
+        collect any information from children. The app requires an active Claude subscription,
+        which itself requires the user to be of appropriate age per Anthropic's terms.
+      </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="privacy-section">
+      <h2>Changes to This Policy</h2>
+      <p>
+        If we make material changes to this privacy policy, we will update the date at the
+        top of this page. We encourage you to review this page periodically. Continued use
+        of Claude Watch after changes are posted constitutes acceptance of the updated policy.
+      </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="privacy-section">
+      <h2>Contact</h2>
+      <p>
+        Questions about this privacy policy or how Claude Watch handles your data?
+        Reach out at <a class="inline-link" href="mailto:SNLabat@gmail.com">SNLabat@gmail.com</a>.
+      </p>
+    </div>
+
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">⌚ Claude Watch</div>
+  <p>A native Apple ecosystem app for monitoring Claude usage.</p>
+  <p class="footer-note">Built with SwiftUI · Runs on iPhone, Apple Watch &amp; Home Screen</p>
+  <div class="footer-links">
+    <a href="support.html">Support</a>
+    <a href="privacy.html">Privacy Policy</a>
+  </div>
+  <p class="footer-note" style="margin-top:16px;color:var(--muted)">Claude Watch is an independent app and is not affiliated with or endorsed by Anthropic.</p>
+</footer>
+
+</body>
+</html>

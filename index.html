@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Watch — Monitor Your Claude Usage</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #08080d;
+      --bg2: #111110;
+      --bg3: #1a1918;
+      --border: rgba(177,173,161,0.12);
+      --text: #ffffff;
+      --muted: #b1ada1;
+      --faint: rgba(177,173,161,0.28);
+      --orange: #c15f3c;
+      --light-grey: #f4f3ee;
+      --dark-grey: #b1ada1;
+      --accent: #c15f3c;
+      --radius: 20px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 48px;
+      background: rgba(8,8,13,0.75);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 17px; font-weight: 600; letter-spacing: -0.3px;
+    }
+    .nav-logo .dot {
+      width: 28px; height: 28px; border-radius: 8px;
+      overflow: hidden; flex-shrink: 0;
+    }
+    .nav-logo .dot img {
+      width: 100%; height: 100%; display: block;
+    }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── HERO ────────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 120px 24px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -60%);
+      width: 800px; height: 800px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(193,95,60,0.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(193,95,60,0.14); border: 1px solid rgba(193,95,60,0.30);
+      border-radius: 100px; padding: 6px 16px; font-size: 13px; color: #d4856a;
+      margin-bottom: 32px; font-weight: 500;
+    }
+    .hero-badge span { width: 6px; height: 6px; border-radius: 50%; background: #c15f3c; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    h1 {
+      font-size: clamp(44px, 8vw, 88px);
+      font-weight: 700; letter-spacing: -3px; line-height: 1.05;
+      margin-bottom: 24px;
+    }
+    h1 em { font-style: normal; color: transparent;
+      background: linear-gradient(135deg, #c15f3c 0%, #f4f3ee 100%);
+      -webkit-background-clip: text; background-clip: text; }
+
+    .hero-sub {
+      font-size: clamp(16px, 2.5vw, 20px);
+      color: var(--muted); max-width: 560px; margin: 0 auto 48px;
+      font-weight: 400; line-height: 1.7;
+    }
+
+    .platform-badges {
+      display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 64px;
+    }
+    .badge {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 100px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      font-size: 13px; font-weight: 500; color: var(--muted);
+    }
+    .badge svg { flex-shrink: 0; }
+
+    /* ── DIAL DEMO ──────────────────────────────────────────────── */
+    .dial-showcase {
+      display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .dial-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px 40px;
+      display: flex; flex-direction: column; align-items: center; gap: 20px;
+      min-width: 200px;
+    }
+    .dial-wrap { position: relative; width: 120px; height: 120px; }
+    .dial-wrap svg { width: 120px; height: 120px; transform: rotate(-90deg); }
+    .dial-track { fill: none; stroke: rgba(177,173,161,0.12); stroke-width: 8; }
+    .dial-fill { fill: none; stroke-width: 8; stroke-linecap: round;
+      stroke-dasharray: 314; transition: stroke-dashoffset 1.5s ease; }
+    .dial-center {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      text-align: center;
+    }
+    .dial-pct { font-size: 24px; font-weight: 700; }
+    .dial-lbl-sm { font-size: 10px; color: var(--muted); }
+    .dial-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+    .dial-reset { font-size: 11px; color: var(--faint); }
+
+    /* ── SECTIONS ────────────────────────────────────────────────── */
+    section { padding: 100px 24px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-eyebrow {
+      font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px;
+    }
+    h2 {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 700; letter-spacing: -1.5px; line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 18px; color: var(--muted); max-width: 560px; line-height: 1.7;
+      margin-bottom: 64px;
+    }
+
+    /* ── FEATURE GRID ────────────────────────────────────────────── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature-card:hover {
+      border-color: rgba(193,95,60,0.3);
+      transform: translateY(-2px);
+    }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: rgba(193,95,60,0.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; margin-bottom: 20px;
+    }
+    .feature-card h3 {
+      font-size: 18px; font-weight: 650; letter-spacing: -0.4px;
+      margin-bottom: 10px;
+    }
+    .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+    /* ── PLATFORMS ───────────────────────────────────────────────── */
+    .platforms-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .platforms-grid { grid-template-columns: 1fr; }
+    }
+    .platform-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .platform-mockup {
+      padding: 32px 24px;
+      min-height: 220px;
+      display: flex; align-items: center; justify-content: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .platform-info { padding: 24px 28px; }
+    .platform-info h3 { font-size: 17px; font-weight: 650; margin-bottom: 8px; }
+    .platform-info p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* iPhone mockup */
+    .iphone {
+      width: 120px; height: 200px;
+      background: #111; border-radius: 22px;
+      border: 2px solid rgba(177,173,161,0.12);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px; padding: 16px;
+      position: relative;
+    }
+    .iphone::before {
+      content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+      width: 36px; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px;
+    }
+    .iphone-dials { display: flex; gap: 10px; }
+
+    /* Watch mockup */
+    .awatch {
+      width: 90px; height: 110px;
+      background: #000; border-radius: 28px;
+      border: 2px solid rgba(177,173,161,0.12);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 6px; padding: 10px;
+      position: relative;
+    }
+    .awatch-dials { display: flex; gap: 6px; }
+
+    /* Widget mockup */
+    .widget-med {
+      width: 180px; height: 90px;
+      background: #000; border-radius: 16px;
+      border: 1px solid rgba(177,173,161,0.1);
+      display: flex; align-items: center; padding: 12px 16px; gap: 16px;
+    }
+    .widget-brand { flex: 1; }
+    .widget-brand-name { font-size: 10px; font-weight: 700; color: white; }
+    .widget-brand-time { font-size: 8px; color: rgba(177,173,161,0.5); margin-top: 2px; }
+    .widget-dials { display: flex; gap: 8px; }
+
+    /* ── HOW IT WORKS ────────────────────────────────────────────── */
+    .flow {
+      display: flex; flex-direction: column; gap: 0;
+      max-width: 640px;
+    }
+    .flow-step {
+      display: flex; gap: 24px; position: relative; padding-bottom: 40px;
+    }
+    .flow-step:last-child { padding-bottom: 0; }
+    .flow-step:last-child .flow-line { display: none; }
+    .flow-left {
+      display: flex; flex-direction: column; align-items: center; gap: 0; flex-shrink: 0;
+    }
+    .flow-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--bg3); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: var(--accent); flex-shrink: 0;
+    }
+    .flow-line {
+      width: 1px; flex: 1; background: var(--border); margin-top: 8px;
+    }
+    .flow-content { padding-top: 6px; }
+    .flow-content h3 { font-size: 16px; font-weight: 650; margin-bottom: 6px; }
+    .flow-content p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* ── STAT ROW ────────────────────────────────────────────────── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px;
+      margin-bottom: 64px;
+    }
+    .stat-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px;
+    }
+    .stat-num { font-size: 36px; font-weight: 700; letter-spacing: -1px; }
+    .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    /* ── CODE BLOCK ──────────────────────────────────────────────── */
+    .code-block {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px 32px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px; line-height: 1.8;
+      overflow-x: auto;
+    }
+    .code-key { color: #c15f3c; }
+    .code-val-num { color: #f4f3ee; }
+    .code-val-str { color: #b1ada1; }
+    .code-val-bool { color: #d4856a; }
+    .code-punct { color: rgba(177,173,161,0.5); }
+
+    /* ── PALETTE CARD ────────────────────────────────────────────── */
+    .palette-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
+    }
+    .palette-swatch {
+      border-radius: 16px; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .palette-color {
+      height: 80px;
+    }
+    .palette-info {
+      background: var(--bg3); padding: 14px 16px;
+    }
+    .palette-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .palette-hex { font-size: 11px; color: var(--muted); font-family: 'SF Mono', monospace; }
+
+    /* ── FOOTER ──────────────────────────────────────────────────── */
+    footer {
+      padding: 64px 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    footer .footer-logo {
+      font-size: 20px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 12px;
+    }
+    footer p { font-size: 13px; color: #ffffff; }
+    footer .footer-note { margin-top: 8px; font-size: 12px; color: var(--muted); }
+    footer .footer-links { margin-top: 16px; display: flex; gap: 24px; justify-content: center; }
+    footer .footer-links a { font-size: 12px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    footer .footer-links a:hover { color: var(--text); }
+
+    /* ── RESPONSIVE ──────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+      .dial-card { padding: 24px 28px; min-width: unset; }
+    }
+
+    /* ── DIVIDER ─────────────────────────────────────────────────── */
+    .divider {
+      width: 100%; height: 1px; background: var(--border);
+      max-width: 1100px; margin: 0 auto;
+    }
+
+    /* two-col layout */
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; gap: 40px; } }
+
+    /* pill tag */
+    .tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(193,95,60,0.08); border: 1px solid rgba(193,95,60,0.2);
+      border-radius: 6px; padding: 3px 10px; font-size: 12px; color: #d4856a;
+      font-family: 'SF Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="dot"><img src="icon.png" alt="Claude Watch icon"/></div>
+    Claude Watch
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#platforms">Platforms</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="support.html">Support</a>
+    <a href="privacy.html">Privacy</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">
+    <span></span>
+    Real-time Claude usage monitoring
+  </div>
+  <h1>Know your limits.<br/><em>Before you hit them.</em></h1>
+  <p class="hero-sub">
+    Claude Watch surfaces your Claude usage across every Apple device — iPhone, Apple Watch, and home screen widget — so you always know exactly where you stand.
+  </p>
+  <div class="platform-badges">
+    <div class="badge">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="4" y="1" width="8" height="14" rx="2" fill="rgba(255,255,255,0.4)"/>
+        <rect x="6.5" y="2.5" width="3" height="1" rx="0.5" fill="rgba(0,0,0,0.4)"/>
+      </svg>
+      iPhone
+    </div>
+    <div class="badge">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="3" y="2" width="10" height="12" rx="3" fill="rgba(255,255,255,0.4)"/>
+        <rect x="6" y="13.5" width="4" height="1" rx="0.3" fill="rgba(255,255,255,0.2)"/>
+      </svg>
+      Apple Watch
+    </div>
+    <div class="badge">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="3" width="14" height="9" rx="2" fill="rgba(255,255,255,0.4)"/>
+        <rect x="5" y="13" width="6" height="1.2" rx="0.3" fill="rgba(255,255,255,0.2)"/>
+      </svg>
+      Home Screen Widget
+    </div>
+  </div>
+
+  <!-- Live dial demo -->
+  <div class="dial-showcase">
+    <div class="dial-card">
+      <div class="dial-wrap">
+        <svg viewBox="0 0 120 120">
+          <circle class="dial-track" cx="60" cy="60" r="50"/>
+          <circle class="dial-fill" id="d5h" cx="60" cy="60" r="50"
+            stroke="#c15f3c" stroke-dashoffset="314"/>
+        </svg>
+        <div class="dial-center">
+          <div class="dial-pct" id="d5h-pct" style="color:#c15f3c">0%</div>
+          <div class="dial-lbl-sm">used</div>
+        </div>
+      </div>
+      <div class="dial-label">5-Hour Window</div>
+      <div class="dial-reset">Resets in 3h 12m</div>
+    </div>
+    <div class="dial-card">
+      <div class="dial-wrap">
+        <svg viewBox="0 0 120 120">
+          <circle class="dial-track" cx="60" cy="60" r="50"/>
+          <circle class="dial-fill" id="d7d" cx="60" cy="60" r="50"
+            stroke="#f4f3ee" stroke-dashoffset="314"/>
+        </svg>
+        <div class="dial-center">
+          <div class="dial-pct" id="d7d-pct" style="color:#f4f3ee">0%</div>
+          <div class="dial-lbl-sm">used</div>
+        </div>
+      </div>
+      <div class="dial-label">7-Day Window</div>
+      <div class="dial-reset">Resets in 2d 8h</div>
+    </div>
+  </div>
+  <p style="font-size:12px;color:var(--faint);margin-top:16px">Animated live preview · Your data stays on-device</p>
+</section>
+
+<div class="divider"></div>
+
+<!-- STATS -->
+<section id="features">
+  <div class="container">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" style="color:#c15f3c">3</div>
+        <div class="stat-label">Apple platforms supported simultaneously</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:#f4f3ee">0</div>
+        <div class="stat-label">Manual steps to capture credentials</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:#c15f3c">30m</div>
+        <div class="stat-label">Widget auto-refresh cadence</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:#f4f3ee">2</div>
+        <div class="stat-label">Usage windows tracked (5h + 7d)</div>
+      </div>
+    </div>
+
+    <p class="section-eyebrow">Features</p>
+    <h2>Everything you need,<br/>nothing you don't.</h2>
+    <p class="section-sub">Claude Watch is purpose-built to be invisible until you need it — then crystal clear the moment you do.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔑</div>
+        <h3>Zero-Touch Login</h3>
+        <p>Sign into Claude through the in-app browser and your session credentials are captured automatically — no copying from DevTools, no manual token entry. It just works.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⌚</div>
+        <h3>Apple Watch Companion</h3>
+        <p>Glance at your wrist to see both usage dials in real-time. Your iPhone pushes credentials to the Watch automatically via WatchConnectivity — the Watch refreshes immediately.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Dual Usage Windows</h3>
+        <p>Claude enforces two independent rate limits: a rolling 5-hour window and a 7-day rolling window. Claude Watch tracks both simultaneously with live countdown timers.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🟦</div>
+        <h3>Home Screen Widgets</h3>
+        <p>Small and medium widget sizes keep your usage visible without opening the app. Both refresh every 30 minutes and display graceful error states if credentials lapse.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <h3>Smart Cross-Device Sync</h3>
+        <p>When your Watch is awake the iPhone sends credentials via direct message. When asleep it uses deferred context — so sync happens seamlessly regardless of Watch state.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3>Privacy by Design</h3>
+        <p>Everything lives on your devices via App Groups shared storage. Credentials never leave the Apple ecosystem — there's no server, no account, no third-party cloud storage.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PLATFORMS -->
+<section id="platforms" style="background:var(--bg2)">
+  <div class="container">
+    <p class="section-eyebrow">Platforms</p>
+    <h2>One app,<br/>every screen.</h2>
+    <p class="section-sub">Claude Watch is a native SwiftUI application built for iPhone, Apple Watch, and the iOS widget system — all sharing the same data layer.</p>
+
+    <div class="platforms-grid">
+      <!-- iPhone -->
+      <div class="platform-card">
+        <div class="platform-mockup" style="background:linear-gradient(160deg, #131210, #0a0908)">
+          <div class="iphone">
+            <div style="font-size:9px;color:rgba(177,173,161,0.4);margin-bottom:4px">Claude Usage</div>
+            <div class="iphone-dials">
+              <!-- 5h dial orange 30% -->
+              <div style="position:relative;width:44px;height:44px">
+                <svg width="44" height="44" viewBox="0 0 44 44" style="transform:rotate(-90deg)">
+                  <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="4"/>
+                  <circle cx="22" cy="22" r="18" fill="none" stroke="#c15f3c" stroke-width="4" stroke-linecap="round"
+                    stroke-dasharray="113" stroke-dashoffset="79"/>
+                </svg>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
+                  <div style="font-size:9px;font-weight:700;color:#c15f3c">30%</div>
+                </div>
+              </div>
+              <!-- 7d dial light grey 70% -->
+              <div style="position:relative;width:44px;height:44px">
+                <svg width="44" height="44" viewBox="0 0 44 44" style="transform:rotate(-90deg)">
+                  <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="4"/>
+                  <circle cx="22" cy="22" r="18" fill="none" stroke="#f4f3ee" stroke-width="4" stroke-linecap="round"
+                    stroke-dasharray="113" stroke-dashoffset="34"/>
+                </svg>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
+                  <div style="font-size:9px;font-weight:700;color:#f4f3ee">70%</div>
+                </div>
+              </div>
+            </div>
+            <div style="font-size:7px;color:rgba(177,173,161,0.3);margin-top:4px">Updated just now</div>
+            <div style="margin-top:8px;background:rgba(193,95,60,0.12);border-radius:6px;padding:5px 14px;font-size:8px;color:#c15f3c">Refresh</div>
+          </div>
+        </div>
+        <div class="platform-info">
+          <h3>iPhone App</h3>
+          <p>Your command center. Sign in once via the embedded browser, then monitor both dials on a clean dark dashboard. Instantly syncs credentials to your Watch the moment you log in.</p>
+        </div>
+      </div>
+
+      <!-- Watch -->
+      <div class="platform-card">
+        <div class="platform-mockup" style="background:linear-gradient(160deg, #131210, #080807)">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <div style="width:36px;height:18px;background:#1a1918;border-radius:4px;border:1px solid rgba(177,173,161,0.08)"></div>
+            <div class="awatch">
+              <div style="font-size:6px;color:rgba(177,173,161,0.35);margin-bottom:2px">Claude Usage</div>
+              <div class="awatch-dials">
+                <div style="position:relative;width:34px;height:34px">
+                  <svg width="34" height="34" viewBox="0 0 34 34" style="transform:rotate(-90deg)">
+                    <circle cx="17" cy="17" r="13" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="3.5"/>
+                    <circle cx="17" cy="17" r="13" fill="none" stroke="#c15f3c" stroke-width="3.5" stroke-linecap="round"
+                      stroke-dasharray="81.7" stroke-dashoffset="57.2"/>
+                  </svg>
+                  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
+                    <div style="font-size:7px;font-weight:700;color:#c15f3c">30%</div>
+                  </div>
+                </div>
+                <div style="position:relative;width:34px;height:34px">
+                  <svg width="34" height="34" viewBox="0 0 34 34" style="transform:rotate(-90deg)">
+                    <circle cx="17" cy="17" r="13" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="3.5"/>
+                    <circle cx="17" cy="17" r="13" fill="none" stroke="#f4f3ee" stroke-width="3.5" stroke-linecap="round"
+                      stroke-dasharray="81.7" stroke-dashoffset="24.5"/>
+                  </svg>
+                  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
+                    <div style="font-size:7px;font-weight:700;color:#f4f3ee">70%</div>
+                  </div>
+                </div>
+              </div>
+              <div style="font-size:5px;color:rgba(177,173,161,0.3);margin-top:3px">5h · 7d</div>
+            </div>
+            <div style="width:36px;height:18px;background:#1a1918;border-radius:4px;border:1px solid rgba(177,173,161,0.08)"></div>
+          </div>
+        </div>
+        <div class="platform-info">
+          <h3>Apple Watch App</h3>
+          <p>Glance at your wrist, see your limits. The watchOS app receives credentials pushed from your iPhone and fetches usage independently — no phone required once synced.</p>
+        </div>
+      </div>
+
+      <!-- Widget -->
+      <div class="platform-card">
+        <div class="platform-mockup" style="background:linear-gradient(160deg, #0e0d0c, #080807)">
+          <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+            <!-- medium widget -->
+            <div class="widget-med">
+              <div class="widget-brand">
+                <div class="widget-brand-name">Claude Usage</div>
+                <div class="widget-brand-time">Updated 2m ago</div>
+              </div>
+              <div class="widget-dials">
+                <div style="position:relative;width:36px;height:36px">
+                  <svg width="36" height="36" viewBox="0 0 36 36" style="transform:rotate(-90deg)">
+                    <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="3"/>
+                    <circle cx="18" cy="18" r="14" fill="none" stroke="#c15f3c" stroke-width="3" stroke-linecap="round"
+                      stroke-dasharray="88" stroke-dashoffset="61.6"/>
+                  </svg>
+                  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
+                    <div style="font-size:8px;font-weight:700;color:#c15f3c">30%</div>
+                  </div>
+                </div>
+                <div style="position:relative;width:36px;height:36px">
+                  <svg width="36" height="36" viewBox="0 0 36 36" style="transform:rotate(-90deg)">
+                    <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="3"/>
+                    <circle cx="18" cy="18" r="14" fill="none" stroke="#f4f3ee" stroke-width="3" stroke-linecap="round"
+                      stroke-dasharray="88" stroke-dashoffset="26.4"/>
+                  </svg>
+                  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
+                    <div style="font-size:8px;font-weight:700;color:#f4f3ee">70%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- small widget -->
+            <div style="width:90px;height:90px;background:#000;border-radius:16px;border:1px solid rgba(177,173,161,0.1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+              <div style="display:flex;gap:6px">
+                <div style="position:relative;width:30px;height:30px">
+                  <svg width="30" height="30" viewBox="0 0 30 30" style="transform:rotate(-90deg)">
+                    <circle cx="15" cy="15" r="11" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="3"/>
+                    <circle cx="15" cy="15" r="11" fill="none" stroke="#c15f3c" stroke-width="3" stroke-linecap="round"
+                      stroke-dasharray="69" stroke-dashoffset="48.3"/>
+                  </svg>
+                  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
+                    <div style="font-size:6px;font-weight:700;color:#c15f3c">30%</div>
+                  </div>
+                </div>
+                <div style="position:relative;width:30px;height:30px">
+                  <svg width="30" height="30" viewBox="0 0 30 30" style="transform:rotate(-90deg)">
+                    <circle cx="15" cy="15" r="11" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="3"/>
+                    <circle cx="15" cy="15" r="11" fill="none" stroke="#f4f3ee" stroke-width="3" stroke-linecap="round"
+                      stroke-dasharray="69" stroke-dashoffset="20.7"/>
+                  </svg>
+                  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
+                    <div style="font-size:6px;font-weight:700;color:#f4f3ee">70%</div>
+                  </div>
+                </div>
+              </div>
+              <div style="font-size:7px;color:rgba(177,173,161,0.35)">Claude</div>
+            </div>
+          </div>
+        </div>
+        <div class="platform-info">
+          <h3>Home Screen Widgets</h3>
+          <p>Small and medium sizes keep both dials on your home screen at all times. Auto-refreshes every 30 minutes. Tap to open the full app.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works">
+  <div class="container">
+    <div class="two-col">
+      <div>
+        <p class="section-eyebrow">How It Works</p>
+        <h2>Simple setup.<br/>Automatic everything.</h2>
+        <p class="section-sub" style="margin-bottom:0">From first launch to live dials in under a minute — no API keys, no developer accounts required.</p>
+      </div>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <h3>Sign in through the app</h3>
+            <p>The iPhone app opens an embedded browser pointed at claude.ai. Log in as normal — the app silently watches for the <span class="tag">sessionKey</span> and <span class="tag">lastActiveOrg</span> cookies to appear.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <h3>Credentials captured automatically</h3>
+            <p>A <span class="tag">WKHTTPCookieStoreObserver</span> fires the moment your session cookies land. No copy-paste, no DevTools — the app handles it instantly.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <h3>Synced to Watch &amp; Widget</h3>
+            <p>Credentials are written to a shared App Group accessible by all three targets. The Watch receives them via WatchConnectivity and pulls live data from the Claude API immediately.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">4</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <h3>Dials stay current</h3>
+            <p>Hit Refresh any time on iPhone or Watch to pull fresh data. Widgets auto-refresh every 30 minutes. Sessions are valid for 30 days — re-login is rarely needed.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WHY IT MATTERS -->
+<section>
+  <div class="container">
+    <p class="section-eyebrow">Why It Matters</p>
+    <h2>Rate limits are invisible<br/>until they aren't.</h2>
+    <p class="section-sub">Claude's usage limits reset on rolling windows — not fixed midnight cutoffs. Without visibility into where you stand right now, you risk hitting a wall mid-task.</p>
+
+    <div class="feature-grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Two Independent Clocks</h3>
+        <p>The 5-hour window controls your burst rate — how hard you can push Claude right now. The 7-day window controls your sustained capacity. Both matter; both are shown.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Glanceable at a Wrist</h3>
+        <p>On a deadline? You don't want to open a browser, navigate to settings, and parse a table. A two-second wrist-raise tells you everything you need to know.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⏱️</div>
+        <h3>Countdown to Reset</h3>
+        <p>Knowing your usage is 80% isn't enough — knowing it resets in 47 minutes is what actually changes your behavior. Claude Watch shows both, always.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">⌚ Claude Watch</div>
+  <p>A native Apple ecosystem app for monitoring Claude usage.</p>
+  <p class="footer-note">Built with SwiftUI · Runs on iPhone, Apple Watch &amp; Home Screen</p>
+  <div class="footer-links">
+    <a href="support.html">Support</a>
+    <a href="privacy.html">Privacy Policy</a>
+  </div>
+  <p class="footer-note" style="margin-top:16px;color:var(--muted)">Claude Watch is an independent app and is not affiliated with or endorsed by Anthropic.</p>
+</footer>
+
+<script>
+  // Animate dials on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('d5h').style.strokeDashoffset = '219.8'; // 30%
+      document.getElementById('d7d').style.strokeDashoffset = '94.2';  // 70%
+    }, 300);
+  });
+
+  // Animate percentage counters
+  function animateNum(el, target, suffix) {
+    let current = 0;
+    const step = target / 60;
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = Math.round(current) + suffix;
+      if (current >= target) clearInterval(timer);
+    }, 16);
+  }
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        animateNum(document.getElementById('d5h-pct'), 30, '%');
+        animateNum(document.getElementById('d7d-pct'), 70, '%');
+        obs.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+  obs.observe(document.querySelector('.dial-showcase'));
+</script>
+
+</body>
+</html>
