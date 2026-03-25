@@ -4,6 +4,67 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Watchman — Monitor Your Claude & Codex Usage</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Monitor your Claude and Codex AI usage in real-time. Track 5-hour and 7-day rate limits across iPhone, Apple Watch, and home screen widgets. Free on the App Store." />
+  <meta name="keywords" content="Claude usage monitor, Codex usage tracker, AI rate limit, Claude AI, iPhone app, Apple Watch, iOS, AI Watchman" />
+  <meta name="author" content="AI Watchman" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="AI Watchman — Monitor Your Claude & Codex Usage" />
+  <meta property="og:description" content="Know your Claude and Codex limits before you hit them. Track 5-hour and 7-day usage windows on iPhone, Apple Watch, and home screen widgets." />
+  <meta property="og:image" content="icon.png" />
+  <meta property="og:site_name" content="AI Watchman" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="AI Watchman — Monitor Your Claude & Codex Usage" />
+  <meta name="twitter:description" content="Know your Claude and Codex limits before you hit them. Track 5-hour and 7-day usage windows on iPhone, Apple Watch, and home screen widgets." />
+  <meta name="twitter:image" content="icon.png" />
+
+  <!-- Apple Smart App Banner -->
+  <meta name="apple-itunes-app" content="app-id=6761028931" />
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "AI Watchman",
+    "description": "Monitor your Claude and Codex AI usage in real-time. Track 5-hour and 7-day rate limits across iPhone, Apple Watch, and home screen widgets. Zero-touch login, completely private — no servers, no accounts.",
+    "operatingSystem": "iOS 16.0+, watchOS 9.0+",
+    "applicationCategory": "UtilitiesApplication",
+    "applicationSubCategory": "Productivity",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    },
+    "downloadUrl": "https://apps.apple.com/us/app/ai-watchman/id6761028931",
+    "installUrl": "https://apps.apple.com/us/app/ai-watchman/id6761028931",
+    "author": {
+      "@type": "Person",
+      "name": "SNLabat"
+    },
+    "softwareVersion": "2.0",
+    "screenshot": "icon.png",
+    "featureList": [
+      "Real-time Claude usage monitoring",
+      "OpenAI Codex usage tracking",
+      "Apple Watch companion app",
+      "Home screen widgets",
+      "5-hour and 7-day rate limit windows",
+      "Live Activities on Lock Screen",
+      "Activity Calendar",
+      "Zero-touch credential capture",
+      "Privacy-first — all data stays on device"
+    ]
+  }
+  </script>
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -15,10 +76,12 @@
       --text: #ffffff;
       --muted: #b1ada1;
       --faint: rgba(177,173,161,0.28);
-      --orange: #c15f3c;
+      --red: #e0312d;
+      --green: #22c55e;
+      --blue: #4285f4;
       --light-grey: #f4f3ee;
       --dark-grey: #b1ada1;
-      --accent: #c15f3c;
+      --accent: #e0312d;
       --radius: 20px;
     }
 
@@ -70,17 +133,20 @@
     }
     .hero-glow {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -60%);
-      width: 800px; height: 800px; border-radius: 50%;
-      background: radial-gradient(ellipse, rgba(193,95,60,0.10) 0%, transparent 70%);
+      width: 900px; height: 900px; border-radius: 50%;
+      background:
+        radial-gradient(ellipse at 30% 50%, rgba(224,49,45,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 40%, rgba(34,197,94,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 55% 55%, rgba(66,133,244,0.10) 0%, transparent 60%);
       pointer-events: none;
     }
     .hero-badge {
       display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(193,95,60,0.14); border: 1px solid rgba(193,95,60,0.30);
-      border-radius: 100px; padding: 6px 16px; font-size: 13px; color: #d4856a;
+      background: rgba(224,49,45,0.12); border: 1px solid rgba(224,49,45,0.28);
+      border-radius: 100px; padding: 6px 16px; font-size: 13px; color: #e8635f;
       margin-bottom: 32px; font-weight: 500;
     }
-    .hero-badge span { width: 6px; height: 6px; border-radius: 50%; background: #c15f3c; animation: pulse 2s infinite; }
+    .hero-badge span { width: 6px; height: 6px; border-radius: 50%; background: #e0312d; animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
     h1 {
@@ -89,7 +155,7 @@
       margin-bottom: 24px;
     }
     h1 em { font-style: normal; color: transparent;
-      background: linear-gradient(135deg, #c15f3c 0%, #f4f3ee 100%);
+      background: linear-gradient(135deg, #e0312d 0%, #22c55e 50%, #4285f4 100%);
       -webkit-background-clip: text; background-clip: text; }
 
     .hero-sub {
@@ -169,12 +235,12 @@
       transition: border-color 0.2s, transform 0.2s;
     }
     .feature-card:hover {
-      border-color: rgba(193,95,60,0.3);
+      border-color: rgba(224,49,45,0.3);
       transform: translateY(-2px);
     }
     .feature-icon {
       width: 44px; height: 44px; border-radius: 12px;
-      background: rgba(193,95,60,0.12);
+      background: rgba(224,49,45,0.12);
       display: flex; align-items: center; justify-content: center;
       font-size: 22px; margin-bottom: 20px;
     }
@@ -294,10 +360,10 @@
       font-size: 13px; line-height: 1.8;
       overflow-x: auto;
     }
-    .code-key { color: #c15f3c; }
+    .code-key { color: #e0312d; }
     .code-val-num { color: #f4f3ee; }
     .code-val-str { color: #b1ada1; }
-    .code-val-bool { color: #d4856a; }
+    .code-val-bool { color: #4285f4; }
     .code-punct { color: rgba(177,173,161,0.5); }
 
     /* ── PALETTE CARD ────────────────────────────────────────────── */
@@ -354,10 +420,30 @@
     /* pill tag */
     .tag {
       display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(193,95,60,0.08); border: 1px solid rgba(193,95,60,0.2);
-      border-radius: 6px; padding: 3px 10px; font-size: 12px; color: #d4856a;
+      background: rgba(66,133,244,0.08); border: 1px solid rgba(66,133,244,0.2);
+      border-radius: 6px; padding: 3px 10px; font-size: 12px; color: #4285f4;
       font-family: 'SF Mono', monospace;
     }
+
+    /* App Store download button */
+    .appstore-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: #ffffff; color: #000000;
+      text-decoration: none; font-size: 15px; font-weight: 600;
+      padding: 14px 28px; border-radius: 100px;
+      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+      margin-bottom: 48px;
+      box-shadow: 0 4px 24px rgba(224,49,45,0.18), 0 2px 8px rgba(66,133,244,0.12);
+    }
+    .appstore-btn:hover { opacity: 0.92; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(224,49,45,0.24), 0 4px 16px rgba(66,133,244,0.16); }
+    .nav-download {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--accent); color: #ffffff !important;
+      padding: 7px 16px; border-radius: 100px;
+      font-size: 13px !important; font-weight: 600 !important;
+      transition: opacity 0.2s !important;
+    }
+    .nav-download:hover { opacity: 0.85; }
   </style>
 </head>
 <body>
@@ -374,6 +460,7 @@
     <a href="#how-it-works">How It Works</a>
     <a href="support.html">Support</a>
     <a href="privacy.html">Privacy</a>
+    <a href="https://apps.apple.com/us/app/ai-watchman/id6761028931" class="nav-download" target="_blank" rel="noopener">Download</a>
   </div>
 </nav>
 
@@ -412,6 +499,14 @@
     </div>
   </div>
 
+  <a href="https://apps.apple.com/us/app/ai-watchman/id6761028931" class="appstore-btn" target="_blank" rel="noopener">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14.12 10.47c-.03-2.1 1.72-3.1 1.8-3.16-.98-1.43-2.5-1.63-3.05-1.65-1.3-.13-2.54.76-3.2.76-.66 0-1.67-.74-2.74-.72-1.4.02-2.7.82-3.42 2.07-1.47 2.54-.38 6.28 1.04 8.34.7 1 1.53 2.13 2.62 2.1 1.05-.04 1.45-.68 2.73-.68 1.27 0 1.63.68 2.75.66 1.14-.02 1.86-1 2.55-2.02.81-1.16 1.14-2.28 1.16-2.34-.03-.01-2.23-.86-2.24-3.36z" fill="#000"/>
+      <path d="M11.97 4.34c.58-.71.97-1.68.86-2.67-.83.03-1.85.56-2.44 1.26-.54.61-1.01 1.61-.88 2.56.93.07 1.88-.47 2.46-1.15z" fill="#000"/>
+    </svg>
+    Download on the App Store
+  </a>
+
   <!-- Live dial demo -->
   <div class="dial-showcase">
     <div class="dial-card">
@@ -419,10 +514,10 @@
         <svg viewBox="0 0 120 120">
           <circle class="dial-track" cx="60" cy="60" r="50"/>
           <circle class="dial-fill" id="d5h" cx="60" cy="60" r="50"
-            stroke="#c15f3c" stroke-dashoffset="314"/>
+            stroke="#e0312d" stroke-dashoffset="314"/>
         </svg>
         <div class="dial-center">
-          <div class="dial-pct" id="d5h-pct" style="color:#c15f3c">0%</div>
+          <div class="dial-pct" id="d5h-pct" style="color:#e0312d">0%</div>
           <div class="dial-lbl-sm">used</div>
         </div>
       </div>
@@ -434,10 +529,10 @@
         <svg viewBox="0 0 120 120">
           <circle class="dial-track" cx="60" cy="60" r="50"/>
           <circle class="dial-fill" id="d7d" cx="60" cy="60" r="50"
-            stroke="#f4f3ee" stroke-dashoffset="314"/>
+            stroke="#4285f4" stroke-dashoffset="314"/>
         </svg>
         <div class="dial-center">
-          <div class="dial-pct" id="d7d-pct" style="color:#f4f3ee">0%</div>
+          <div class="dial-pct" id="d7d-pct" style="color:#4285f4">0%</div>
           <div class="dial-lbl-sm">used</div>
         </div>
       </div>
@@ -455,19 +550,19 @@
   <div class="container">
     <div class="stats-row">
       <div class="stat-card">
-        <div class="stat-num" style="color:#c15f3c">3</div>
+        <div class="stat-num" style="color:#e0312d">3</div>
         <div class="stat-label">Apple platforms supported simultaneously</div>
       </div>
       <div class="stat-card">
-        <div class="stat-num" style="color:#f4f3ee">0</div>
+        <div class="stat-num" style="color:#22c55e">0</div>
         <div class="stat-label">Manual steps to capture credentials</div>
       </div>
       <div class="stat-card">
-        <div class="stat-num" style="color:#c15f3c">2</div>
+        <div class="stat-num" style="color:#e0312d">2</div>
         <div class="stat-label">AI platforms tracked — Claude &amp; Codex</div>
       </div>
       <div class="stat-card">
-        <div class="stat-num" style="color:#f4f3ee">2</div>
+        <div class="stat-num" style="color:#4285f4">2</div>
         <div class="stat-label">Usage windows tracked (5h + 7d)</div>
       </div>
     </div>
@@ -546,27 +641,27 @@
               <div style="position:relative;width:44px;height:44px">
                 <svg width="44" height="44" viewBox="0 0 44 44" style="transform:rotate(-90deg)">
                   <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="4"/>
-                  <circle cx="22" cy="22" r="18" fill="none" stroke="#c15f3c" stroke-width="4" stroke-linecap="round"
+                  <circle cx="22" cy="22" r="18" fill="none" stroke="#e0312d" stroke-width="4" stroke-linecap="round"
                     stroke-dasharray="113" stroke-dashoffset="79"/>
                 </svg>
                 <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
-                  <div style="font-size:9px;font-weight:700;color:#c15f3c">30%</div>
+                  <div style="font-size:9px;font-weight:700;color:#e0312d">30%</div>
                 </div>
               </div>
               <!-- 7d dial light grey 70% -->
               <div style="position:relative;width:44px;height:44px">
                 <svg width="44" height="44" viewBox="0 0 44 44" style="transform:rotate(-90deg)">
                   <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="4"/>
-                  <circle cx="22" cy="22" r="18" fill="none" stroke="#f4f3ee" stroke-width="4" stroke-linecap="round"
+                  <circle cx="22" cy="22" r="18" fill="none" stroke="#4285f4" stroke-width="4" stroke-linecap="round"
                     stroke-dasharray="113" stroke-dashoffset="34"/>
                 </svg>
                 <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
-                  <div style="font-size:9px;font-weight:700;color:#f4f3ee">70%</div>
+                  <div style="font-size:9px;font-weight:700;color:#4285f4">70%</div>
                 </div>
               </div>
             </div>
             <div style="font-size:7px;color:rgba(177,173,161,0.3);margin-top:4px">Updated just now</div>
-            <div style="margin-top:8px;background:rgba(193,95,60,0.12);border-radius:6px;padding:5px 14px;font-size:8px;color:#c15f3c">Refresh</div>
+            <div style="margin-top:8px;background:rgba(224,49,45,0.12);border-radius:6px;padding:5px 14px;font-size:8px;color:#e0312d">Refresh</div>
           </div>
         </div>
         <div class="platform-info">
@@ -586,21 +681,21 @@
                 <div style="position:relative;width:34px;height:34px">
                   <svg width="34" height="34" viewBox="0 0 34 34" style="transform:rotate(-90deg)">
                     <circle cx="17" cy="17" r="13" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="3.5"/>
-                    <circle cx="17" cy="17" r="13" fill="none" stroke="#c15f3c" stroke-width="3.5" stroke-linecap="round"
+                    <circle cx="17" cy="17" r="13" fill="none" stroke="#e0312d" stroke-width="3.5" stroke-linecap="round"
                       stroke-dasharray="81.7" stroke-dashoffset="57.2"/>
                   </svg>
                   <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
-                    <div style="font-size:7px;font-weight:700;color:#c15f3c">30%</div>
+                    <div style="font-size:7px;font-weight:700;color:#e0312d">30%</div>
                   </div>
                 </div>
                 <div style="position:relative;width:34px;height:34px">
                   <svg width="34" height="34" viewBox="0 0 34 34" style="transform:rotate(-90deg)">
                     <circle cx="17" cy="17" r="13" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="3.5"/>
-                    <circle cx="17" cy="17" r="13" fill="none" stroke="#f4f3ee" stroke-width="3.5" stroke-linecap="round"
+                    <circle cx="17" cy="17" r="13" fill="none" stroke="#4285f4" stroke-width="3.5" stroke-linecap="round"
                       stroke-dasharray="81.7" stroke-dashoffset="24.5"/>
                   </svg>
                   <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
-                    <div style="font-size:7px;font-weight:700;color:#f4f3ee">70%</div>
+                    <div style="font-size:7px;font-weight:700;color:#4285f4">70%</div>
                   </div>
                 </div>
               </div>
@@ -629,21 +724,21 @@
                 <div style="position:relative;width:36px;height:36px">
                   <svg width="36" height="36" viewBox="0 0 36 36" style="transform:rotate(-90deg)">
                     <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="3"/>
-                    <circle cx="18" cy="18" r="14" fill="none" stroke="#c15f3c" stroke-width="3" stroke-linecap="round"
+                    <circle cx="18" cy="18" r="14" fill="none" stroke="#e0312d" stroke-width="3" stroke-linecap="round"
                       stroke-dasharray="88" stroke-dashoffset="61.6"/>
                   </svg>
                   <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
-                    <div style="font-size:8px;font-weight:700;color:#c15f3c">30%</div>
+                    <div style="font-size:8px;font-weight:700;color:#e0312d">30%</div>
                   </div>
                 </div>
                 <div style="position:relative;width:36px;height:36px">
                   <svg width="36" height="36" viewBox="0 0 36 36" style="transform:rotate(-90deg)">
                     <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="3"/>
-                    <circle cx="18" cy="18" r="14" fill="none" stroke="#f4f3ee" stroke-width="3" stroke-linecap="round"
+                    <circle cx="18" cy="18" r="14" fill="none" stroke="#4285f4" stroke-width="3" stroke-linecap="round"
                       stroke-dasharray="88" stroke-dashoffset="26.4"/>
                   </svg>
                   <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
-                    <div style="font-size:8px;font-weight:700;color:#f4f3ee">70%</div>
+                    <div style="font-size:8px;font-weight:700;color:#4285f4">70%</div>
                   </div>
                 </div>
               </div>
@@ -654,21 +749,21 @@
                 <div style="position:relative;width:30px;height:30px">
                   <svg width="30" height="30" viewBox="0 0 30 30" style="transform:rotate(-90deg)">
                     <circle cx="15" cy="15" r="11" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="3"/>
-                    <circle cx="15" cy="15" r="11" fill="none" stroke="#c15f3c" stroke-width="3" stroke-linecap="round"
+                    <circle cx="15" cy="15" r="11" fill="none" stroke="#e0312d" stroke-width="3" stroke-linecap="round"
                       stroke-dasharray="69" stroke-dashoffset="48.3"/>
                   </svg>
                   <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
-                    <div style="font-size:6px;font-weight:700;color:#c15f3c">30%</div>
+                    <div style="font-size:6px;font-weight:700;color:#e0312d">30%</div>
                   </div>
                 </div>
                 <div style="position:relative;width:30px;height:30px">
                   <svg width="30" height="30" viewBox="0 0 30 30" style="transform:rotate(-90deg)">
                     <circle cx="15" cy="15" r="11" fill="none" stroke="rgba(177,173,161,0.1)" stroke-width="3"/>
-                    <circle cx="15" cy="15" r="11" fill="none" stroke="#f4f3ee" stroke-width="3" stroke-linecap="round"
+                    <circle cx="15" cy="15" r="11" fill="none" stroke="#4285f4" stroke-width="3" stroke-linecap="round"
                       stroke-dasharray="69" stroke-dashoffset="20.7"/>
                   </svg>
                   <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
-                    <div style="font-size:6px;font-weight:700;color:#f4f3ee">70%</div>
+                    <div style="font-size:6px;font-weight:700;color:#4285f4">70%</div>
                   </div>
                 </div>
               </div>
@@ -764,7 +859,17 @@
   <div class="footer-logo">⌚ AI Watchman</div>
   <p>A native Apple ecosystem app for monitoring Claude and Codex usage.</p>
   <p class="footer-note">Built with SwiftUI · Runs on iPhone, Apple Watch &amp; Home Screen</p>
-  <div class="footer-links">
+  <div style="margin:24px auto 0">
+    <a href="https://apps.apple.com/us/app/ai-watchman/id6761028931" target="_blank" rel="noopener"
+      style="display:inline-flex;align-items:center;gap:8px;background:#ffffff;color:#000000;text-decoration:none;font-size:13px;font-weight:600;padding:10px 22px;border-radius:100px;transition:opacity 0.2s">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14.12 10.47c-.03-2.1 1.72-3.1 1.8-3.16-.98-1.43-2.5-1.63-3.05-1.65-1.3-.13-2.54.76-3.2.76-.66 0-1.67-.74-2.74-.72-1.4.02-2.7.82-3.42 2.07-1.47 2.54-.38 6.28 1.04 8.34.7 1 1.53 2.13 2.62 2.1 1.05-.04 1.45-.68 2.73-.68 1.27 0 1.63.68 2.75.66 1.14-.02 1.86-1 2.55-2.02.81-1.16 1.14-2.28 1.16-2.34-.03-.01-2.23-.86-2.24-3.36z" fill="#000"/>
+        <path d="M11.97 4.34c.58-.71.97-1.68.86-2.67-.83.03-1.85.56-2.44 1.26-.54.61-1.01 1.61-.88 2.56.93.07 1.88-.47 2.46-1.15z" fill="#000"/>
+      </svg>
+      Download on the App Store
+    </a>
+  </div>
+  <div class="footer-links" style="margin-top:20px">
     <a href="support.html">Support</a>
     <a href="privacy.html">Privacy Policy</a>
   </div>
